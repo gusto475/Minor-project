@@ -4,7 +4,7 @@ import rebar_p as rp
 import handcalcs
 import forallpeople 
 from handcalcs.decorator import handcalc
-import eng_module.mini_proj.rebar_2 as rb
+import rebar_2 as rb
 import forallpeople as si
 
 si.environment("structural")
