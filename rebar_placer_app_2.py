@@ -44,14 +44,15 @@ agg_size = st.sidebar.number_input("Aggregate size(mm)", value=20)
 
 #input of link props
 st.sidebar.subheader("Link Properties")
-link_diam = st.sidebar.number_input("Link diameter(mm)", value=10)
+allowed_link_sizes = [11, 16, 20]
+link_diam = st.sidebar.selectbox("Link diameter(mm)", allowed_link_sizes)
 
 #input of repar props
 st.sidebar.subheader("Rebar Layer properties")
 num_layers = st.sidebar.number_input("Number of Layers", min_value=1, max_value=2, value=1)
 ## generate a list containing: layer number, bar size and number of bars per layer
 bar_properties = []
-allowed_bar_sizes = [11, 16, 20, 25, 36, 44, 56]
+allowed_bar_sizes = [11, 16, 20, 25, 30, 36, 44, 56]
 for i in range(num_layers):
     with st.sidebar.expander(f"Layer {i + 1} Properties"):
         cols = st.columns(3)
@@ -69,17 +70,11 @@ for i in range(num_layers):
             st.warning("Warning: Number of bars in the 2nd layer differs from the 1st layer. They should match per code requirements.")
 
 
-
-
-
-
-
-
-
 #Implement the plot function
 fig = rb.setup_concrete_section(beam_width, beam_depth,concrete_cover,link_diam)
 #generate coordinates for the bars
 coordinates_list = rb.generate_bar_coordinates(bar_properties, beam_width, beam_depth, concrete_cover, link_diam, agg_size)
+
 #plot the bars and add dimensions
 rb.plot_bars(fig, coordinates_list, beam_depth)
 

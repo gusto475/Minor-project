@@ -8,7 +8,7 @@ def calculate_effective_width(beam_width: float, concrete_cover: float, link_dia
     """
     Calculates width available for bar placement, considering concrete cover and link size
     """
-    effective_width = beam_width - 2 * (concrete_cover + link_diam + bar_diam/2)
+    effective_width = beam_width - 2 * (concrete_cover + link_diam )
     return effective_width
 def calculate_effective_depth(beam_depth: float, concrete_cover: float, link_diam: float, bar_diam: float, bar_y_offset: float = 0) :
     """
@@ -23,8 +23,8 @@ def calculate_bar_spacing(effective_width: float, num_of_bars: int, bar_diam: fl
     per CSA A23-1 Clause 6.6.5.2
     """
    
-    bar_space = (effective_width - (num_of_bars*bar_diam))/ (num_of_bars - 1) #gap between bars
-    min_spacing = max(1.4 * bar_diam, 1.4 * agg_size, concrete_cover)
+    bar_space = int((effective_width - (num_of_bars*bar_diam))/ (num_of_bars - 1)) #gap between bars
+    min_spacing = max(1.4 * bar_diam, 1.4 * agg_size, 30) #CSA23-1 Cl 6.6.5.3  
     bar_spacing = max(bar_space, min_spacing)
     
     return bar_spacing
@@ -119,7 +119,7 @@ def generate_bar_coordinates(bar_properties: List[List[int]], beam_width: float,
                 previous_bar_diam = bar_properties[i][1]
                 x_coord = x_coords[bar_idx - 1] + previous_bar_diam / 2 + bar_spacing + bar_diam / 2
             x_coords.append(x_coord)
-            print(f"x_coords: {x_coords}")
+            
         
         # Check if bar placement is within effective width
         check_bar_placement_with_effective_width(x_coords, effective_width, beam_width, concrete_cover, link_diam, bar_diam)
@@ -177,17 +177,20 @@ def add_legend(fig: go.Figure, concrete_cover: float, agg_size: float, bar_prope
         bar_leg_dia = bar_properties[0][1]
         bar_leg_num = bar_properties[0][2]
 
-    min_spacing = max(1.4 * bar_leg_dia, 1.4 * agg_size, concrete_cover)
+    min_spacing = max(1.4 * bar_leg_dia, 1.4 * agg_size, 30)
     effective_width = calculate_effective_width(beam_width, concrete_cover, link_diam, bar_leg_dia)
     bar_spacing = calculate_bar_spacing(effective_width, bar_leg_num, bar_leg_dia, agg_size, concrete_cover)
     #Items to be placed in the legend
+    
     legend_text = (
-        f"<b>Legend</b><br>"
+        f"<b>Bar Spacing Parameters</b><br>"
         f"Concrete Cover: {concrete_cover} mm<br>"
-        f"1.4*Aggregate Size: {1.4*agg_size} mm<br>"
-        f"1.4*Bar Size: {1.4*bar_leg_dia} mm<br>"
-        f"Minimum Spacing: {min_spacing} mm<br>"
-        f"Calculated Spacing Provided: {round(bar_spacing, 1)} mm"
+        f"Beam Width: {beam_width} mm<br>"
+        f"1st Layer Bar: {bar_leg_dia} mm<br>"
+        f"Minimum Cover: {30} mm<br>"
+        f"Aggregate Size: {agg_size} mm<br>"
+       
+        
     )
     
     # Add the legend as a text annotation
